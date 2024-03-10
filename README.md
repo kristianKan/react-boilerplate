@@ -4,7 +4,7 @@ Make sure you follow the .nvmrc and use Node 18
 
 Start the app using the following command, replacing the key by your API key:
 
-    VITE_API_KEY="your_api_key" pnpm run dev
+    pnpm run dev
 
 ## Setup
 

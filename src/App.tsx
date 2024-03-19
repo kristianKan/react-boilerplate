@@ -59,8 +59,8 @@ const App = observer(() => {
     }
   };
 
-  const handleRemoveImage = (imageUrl: string) => {
-    folderStore.folders[selectedFolderIndex].folder.removeImage(imageUrl);
+  const handleRemoveImage = (imageUrl: string, folderIndex: number) => {
+    folderStore.folders[folderIndex].folder.removeImage(imageUrl);
   };
 
   return (
@@ -89,7 +89,17 @@ const App = observer(() => {
       </select>
       <AddButton onImageAdd={onImageAdd} />
       {folderStore.folders.map((folder, folderIndex) => (
-        <div key={folderIndex}>
+        <div
+          key={folderIndex}
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={(e) => {
+            const data = JSON.parse(e.dataTransfer.getData("image"));
+            folderStore.folders[data.sourceFolderIndex].folder.moveImage(
+              folder.folder,
+              data.imageUrl
+            );
+          }}
+        >
           {editingFolderIndex === folderIndex ? (
             <input
               type="text"
@@ -108,12 +118,21 @@ const App = observer(() => {
             </h2>
           )}
           {folder.folder.images.map((imageUrl, imageIndex) => (
-            <div
-              key={imageIndex}
-              className="flex items-center justify-center h-screen w-screen"
-            >
-              <img src={imageUrl} alt={`Uploaded image ${imageIndex + 1}`} />
-              <button onClick={() => handleRemoveImage(imageUrl)}>X</button>
+            <div key={imageIndex}>
+              <img
+                src={imageUrl}
+                alt={`Uploaded image ${imageIndex + 1}`}
+                draggable="true"
+                onDragStart={(e) => {
+                  e.dataTransfer.setData(
+                    "image",
+                    JSON.stringify({ imageUrl, sourceFolderIndex: folderIndex })
+                  );
+                }}
+              />
+              <button onClick={() => handleRemoveImage(imageUrl, folderIndex)}>
+                X
+              </button>
             </div>
           ))}
         </div>

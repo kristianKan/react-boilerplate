@@ -2,6 +2,7 @@ import { ChangeEvent, useState } from "react";
 import AddButton from "./components/AddButton";
 import loadImage, { LoadImageResult } from "blueimp-load-image";
 import { API_KEY, API_URL, BASE64_IMAGE_HEADER } from "./constants";
+import store from "./store";
 
 function App() {
   const [result, setResult] = useState<string | null>(null);
@@ -36,6 +37,7 @@ function App() {
         const result = await response.json();
         const base64Result = BASE64_IMAGE_HEADER + result.result_b64;
         setResult(base64Result);
+        store.addImage(base64Result);
       })
 
       .catch((error) => {
@@ -53,12 +55,15 @@ function App() {
 
   return (
     <div>
-      {!result && <AddButton onImageAdd={onImageAdd} />}
-      {result && (
-        <div className="flex items-center justify-center h-screen w-screen">
-          <img src={result} className="block w-80" alt="result from the API" />
+      <AddButton onImageAdd={onImageAdd} />
+      {store.images.map((imageUrl, index) => (
+        <div
+          key={index}
+          className="flex items-center justify-center h-screen w-screen"
+        >
+          <img src={imageUrl} alt={`Uploaded image ${index + 1}`} />
         </div>
-      )}
+      ))}
     </div>
   );
 }

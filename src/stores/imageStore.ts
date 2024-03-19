@@ -1,6 +1,6 @@
 import { makeAutoObservable } from "mobx";
 
-class Store {
+export class ImageStore {
   value = 0;
   images: string[] = [];
 
@@ -19,14 +19,10 @@ class Store {
     }
   }
 
-  // dummy methods for example
-  increment() {
-    this.value++;
-  }
-
-  decrement() {
-    this.value--;
+  moveImage(otherStore: ImageStore, imageUrl: string) {
+    this.removeImage(imageUrl);
+    otherStore.addImage(imageUrl);
   }
 }
 
-export default new Store();
+export default new ImageStore();

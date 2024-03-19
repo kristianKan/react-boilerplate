@@ -1,10 +1,10 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent } from "react";
 import { observer } from "mobx-react-lite";
 
 import AddButton from "./components/AddButton";
 import loadImage, { LoadImageResult } from "blueimp-load-image";
 import { API_KEY, API_URL, BASE64_IMAGE_HEADER } from "./constants";
-import store from "./store";
+import folderStore from "./stores/folderStore";
 
 const uploadImageToServer = (file: File) => {
   loadImage(file, {
@@ -35,7 +35,9 @@ const uploadImageToServer = (file: File) => {
 
       const result = await response.json();
       const base64Result = BASE64_IMAGE_HEADER + result.result_b64;
-      store.addImage(base64Result);
+
+      // Add the new image to the default folder
+      folderStore.folders[0].folder.addImage(base64Result);
     })
 
     .catch((error) => {
@@ -52,14 +54,14 @@ const onImageAdd = (e: ChangeEvent<HTMLInputElement>) => {
 };
 
 const handleRemoveImage = (imageUrl: string) => {
-  store.removeImage(imageUrl);
+  folderStore.folders[0].folder.removeImage(imageUrl);
 };
 
 const App = observer(() => {
   return (
     <div>
       <AddButton onImageAdd={onImageAdd} />
-      {store.images.map((imageUrl, index) => (
+      {folderStore.folders[0].folder.images.map((imageUrl, index) => (
         <div
           key={index}
           className="flex items-center justify-center h-screen w-screen"

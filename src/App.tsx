@@ -46,10 +46,6 @@ const uploadImageToServer = (file: File, folderIndex: number) => {
     });
 };
 
-const handleRemoveImage = (imageUrl: string) => {
-  folderStore.folders[0].folder.removeImage(imageUrl);
-};
-
 const App = observer(() => {
   const [newFolderName, setNewFolderName] = useState("");
   const [selectedFolderIndex, setSelectedFolderIndex] = useState(0);
@@ -60,6 +56,10 @@ const App = observer(() => {
     } else {
       console.error("No file was picked");
     }
+  };
+
+  const handleRemoveImage = (imageUrl: string) => {
+    folderStore.folders[selectedFolderIndex].folder.removeImage(imageUrl);
   };
 
   return (
@@ -87,13 +87,18 @@ const App = observer(() => {
         ))}
       </select>
       <AddButton onImageAdd={onImageAdd} />
-      {folderStore.folders[0].folder.images.map((imageUrl, index) => (
-        <div
-          key={index}
-          className="flex items-center justify-center h-screen w-screen"
-        >
-          <img src={imageUrl} alt={`Uploaded image ${index + 1}`} />
-          <button onClick={() => handleRemoveImage(imageUrl)}>X</button>
+      {folderStore.folders.map((folder, folderIndex) => (
+        <div key={folderIndex}>
+          <h2>{folder.name}</h2>
+          {folder.folder.images.map((imageUrl, imageIndex) => (
+            <div
+              key={imageIndex}
+              className="flex items-center justify-center h-screen w-screen"
+            >
+              <img src={imageUrl} alt={`Uploaded image ${imageIndex + 1}`} />
+              <button onClick={() => handleRemoveImage(imageUrl)}>X</button>
+            </div>
+          ))}
         </div>
       ))}
     </div>

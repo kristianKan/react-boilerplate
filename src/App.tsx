@@ -4,6 +4,48 @@ import AddButton from "./components/AddButton";
 import folderStore from "./stores/folderStore";
 import { ImageStore } from "./stores/imageStore";
 import { removeBackground } from "./services/removeBackgroundApi";
+import styled from "styled-components";
+
+const StyledButton = styled.button`
+  background-color: #4caf50; /* Green */
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+`;
+
+const StyledInput = styled.input`
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+`;
+
+const StyledSelect = styled.select`
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+`;
+
+const StyledH2 = styled.h2`
+  color: #333;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+`;
+
+const StyledH3 = styled.h3`
+  color: #333;
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 15px;
+`;
 
 const App = observer(() => {
   const [newFolderName, setNewFolderName] = useState("");
@@ -22,21 +64,25 @@ const App = observer(() => {
     folderStore.folders[folderIndex].folder.removeImage(imageUrl);
   };
 
+  const handleAddFolder = () => {
+    folderStore.addFolder(newFolderName, new ImageStore());
+    setSelectedFolderIndex(folderStore.folders.length - 1);
+    setNewFolderName(""); // Set newFolderName to null
+  };
+
   return (
     <div>
       <div>
-        <input
+        <StyledInput
           type="text"
           value={newFolderName}
           onChange={(e) => setNewFolderName(e.target.value)}
         />
-        <button
-          onClick={() => folderStore.addFolder(newFolderName, new ImageStore())}
-        >
+        <StyledButton onClick={() => handleAddFolder()}>
           Create new folder
-        </button>
+        </StyledButton>
       </div>
-      <select
+      <StyledSelect
         value={selectedFolderIndex}
         onChange={(e) => setSelectedFolderIndex(Number(e.target.value))}
       >
@@ -45,8 +91,9 @@ const App = observer(() => {
             {folder.name}
           </option>
         ))}
-      </select>
+      </StyledSelect>
       <AddButton onImageAdd={onImageAdd} />
+      <StyledH2>Folders</StyledH2>
       {folderStore.folders.map((folder, folderIndex) => (
         <div
           key={folderIndex}
@@ -60,7 +107,7 @@ const App = observer(() => {
           }}
         >
           {editingFolderIndex === folderIndex ? (
-            <input
+            <StyledInput
               type="text"
               value={newFolderName}
               onChange={(e) => setNewFolderName(e.target.value)}
@@ -72,9 +119,9 @@ const App = observer(() => {
               }}
             />
           ) : (
-            <h2 onClick={() => setEditingFolderIndex(folderIndex)}>
+            <StyledH3 onClick={() => setEditingFolderIndex(folderIndex)}>
               {folder.name}
-            </h2>
+            </StyledH3>
           )}
           {folder.folder.images.map((imageUrl, imageIndex) => (
             <div key={imageIndex}>
@@ -89,9 +136,11 @@ const App = observer(() => {
                   );
                 }}
               />
-              <button onClick={() => handleRemoveImage(imageUrl, folderIndex)}>
-                X
-              </button>
+              <StyledButton
+                onClick={() => handleRemoveImage(imageUrl, folderIndex)}
+              >
+                Remove
+              </StyledButton>
             </div>
           ))}
         </div>

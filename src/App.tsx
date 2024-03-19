@@ -1,12 +1,13 @@
-import { ChangeEvent } from "react";
+import { ChangeEvent, useState } from "react";
 import { observer } from "mobx-react-lite";
 
 import AddButton from "./components/AddButton";
 import loadImage, { LoadImageResult } from "blueimp-load-image";
 import { API_KEY, API_URL, BASE64_IMAGE_HEADER } from "./constants";
 import folderStore from "./stores/folderStore";
+import { ImageStore } from "./stores/imageStore";
 
-const uploadImageToServer = (file: File) => {
+const uploadImageToServer = (file: File, folderIndex: number) => {
   loadImage(file, {
     maxWidth: 400,
     maxHeight: 400,
@@ -37,7 +38,7 @@ const uploadImageToServer = (file: File) => {
       const base64Result = BASE64_IMAGE_HEADER + result.result_b64;
 
       // Add the new image to the default folder
-      folderStore.folders[0].folder.addImage(base64Result);
+      folderStore.folders[folderIndex].folder.addImage(base64Result);
     })
 
     .catch((error) => {
@@ -45,21 +46,46 @@ const uploadImageToServer = (file: File) => {
     });
 };
 
-const onImageAdd = (e: ChangeEvent<HTMLInputElement>) => {
-  if (e.target.files && e.target.files[0]) {
-    uploadImageToServer(e.target.files[0]);
-  } else {
-    console.error("No file was picked");
-  }
-};
-
 const handleRemoveImage = (imageUrl: string) => {
   folderStore.folders[0].folder.removeImage(imageUrl);
 };
 
 const App = observer(() => {
+  const [newFolderName, setNewFolderName] = useState("");
+  const [selectedFolderIndex, setSelectedFolderIndex] = useState(0);
+
+  const onImageAdd = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      uploadImageToServer(e.target.files[0], selectedFolderIndex);
+    } else {
+      console.error("No file was picked");
+    }
+  };
+
   return (
     <div>
+      <div>
+        <input
+          type="text"
+          value={newFolderName}
+          onChange={(e) => setNewFolderName(e.target.value)}
+        />
+        <button
+          onClick={() => folderStore.addFolder(newFolderName, new ImageStore())}
+        >
+          Create new folder
+        </button>
+      </div>
+      <select
+        value={selectedFolderIndex}
+        onChange={(e) => setSelectedFolderIndex(Number(e.target.value))}
+      >
+        {folderStore.folders.map((folder, index) => (
+          <option value={index} key={index}>
+            {folder.name}
+          </option>
+        ))}
+      </select>
       <AddButton onImageAdd={onImageAdd} />
       {folderStore.folders[0].folder.images.map((imageUrl, index) => (
         <div

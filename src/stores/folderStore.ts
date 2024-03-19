@@ -1,4 +1,5 @@
 import { makeAutoObservable } from "mobx";
+import { makePersistable } from "mobx-persist-store";
 import { ImageStore } from "./imageStore";
 
 class FolderStore {
@@ -8,6 +9,23 @@ class FolderStore {
 
   constructor() {
     makeAutoObservable(this);
+    /*
+    makePersistable(this, {
+      name: "folderStore",
+      properties: [
+        {
+          key: "folders",
+          serialize: (value) => {
+            return value.join(",");
+          },
+          deserialize: (value) => {
+            return value.split(",");
+          },
+        },
+      ],
+      storage: window.localStorage,
+    });
+    */
   }
 
   addFolder(newName: string, newFolder: ImageStore) {

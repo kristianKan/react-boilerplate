@@ -48,6 +48,7 @@ const uploadImageToServer = (file: File, folderIndex: number) => {
 
 const App = observer(() => {
   const [newFolderName, setNewFolderName] = useState("");
+  const [editingFolderIndex, setEditingFolderIndex] = useState(-1);
   const [selectedFolderIndex, setSelectedFolderIndex] = useState(0);
 
   const onImageAdd = (e: ChangeEvent<HTMLInputElement>) => {
@@ -89,7 +90,23 @@ const App = observer(() => {
       <AddButton onImageAdd={onImageAdd} />
       {folderStore.folders.map((folder, folderIndex) => (
         <div key={folderIndex}>
-          <h2>{folder.name}</h2>
+          {editingFolderIndex === folderIndex ? (
+            <input
+              type="text"
+              value={newFolderName}
+              onChange={(e) => setNewFolderName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  folderStore.renameFolder(editingFolderIndex, newFolderName);
+                  setEditingFolderIndex(-1);
+                }
+              }}
+            />
+          ) : (
+            <h2 onClick={() => setEditingFolderIndex(folderIndex)}>
+              {folder.name}
+            </h2>
+          )}
           {folder.folder.images.map((imageUrl, imageIndex) => (
             <div
               key={imageIndex}

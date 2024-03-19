@@ -13,6 +13,10 @@ class FolderStore {
   addFolder(newName: string, newFolder: ImageStore) {
     this.folders.push({ name: newName, folder: newFolder });
   }
+
+  renameFolder(index: number, newName: string) {
+    this.folders[index].name = newName;
+  }
 }
 
 export default new FolderStore();

@@ -1,6 +1,12 @@
 import { makeAutoObservable } from "mobx";
 import { makePersistable } from "mobx-persist-store";
 import { ImageStore } from "./imageStore";
+import { Image } from "./imageStore";
+
+export interface Folder {
+  name: string;
+  folder: Image;
+}
 
 class FolderStore {
   folders: { name: string; folder: ImageStore }[] = [

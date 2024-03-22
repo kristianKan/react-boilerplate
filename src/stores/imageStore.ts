@@ -1,7 +1,10 @@
 import { makeAutoObservable } from "mobx";
 
+export interface Image {
+  images: Array<string>;
+}
+
 export class ImageStore {
-  value = 0;
   images: string[] = [];
 
   constructor() {

@@ -7,6 +7,11 @@ const StyledSelect = styled.select`
   font-size: 16px;
   border-radius: 5px;
   border: 1px solid #ccc;
+  width: 180px;
+  height: 46px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 `;
 
 const FolderSelector = observer(() => {

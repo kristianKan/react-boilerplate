@@ -3,29 +3,50 @@ import FolderRename from "./FolderRename";
 import ImageList from "./ImageList";
 import folderStore from "../stores/folderStore";
 import styled from "styled-components";
+import { Bin } from "@styled-icons/icomoon/Bin";
 
-const StyledH2 = styled.h2`
+const StyledH1 = styled.h1`
   color: #333;
-  font-size: 24px;
+  font-size: 36px;
   font-weight: bold;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 `;
 
 const StyledButton = styled.button`
-  position: absolute;
-  top: 0;
-  right: 0;
-  background-color: #f44336; // Red
-  color: white;
-  border: none;
+  display: none;
   cursor: pointer;
-  padding: 10px 15px;
-  font-size: 20px;
-  line-height: 1;
-  z-index: 1;
-  &:hover {
-    background-color: #d32f2f;
+  color: black;
+  width: 22px;
+  height: 22px;
+  margin-left: 6px;
+`;
+
+const HeaderContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+
+  &:hover ${StyledButton} {
+    display: block;
   }
+`;
+
+const ImageListContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+`;
+
+const FlexContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+`;
+
+const GridContainer = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
 `;
 
 const FolderList = observer(() => {
@@ -49,21 +70,26 @@ const FolderList = observer(() => {
 
   return (
     <>
-      <StyledH2>Folders</StyledH2>
-      {folderStore.folders.map((folder, folderIndex) => (
-        <div key={folder.id} style={{ position: "relative" }}>
-          <StyledButton onClick={() => handleRemoveFolder(folder.id)}>
-            X
-          </StyledButton>
-          <div
+      <StyledH1>Folders</StyledH1>
+      <GridContainer>
+        {folderStore.folders.map((folder, folderIndex) => (
+          <FlexContainer
+            key={folder.id}
             onDragOver={(e) => e.preventDefault()}
             onDrop={(e) => handleDropFolder(e, folder.id)}
           >
-            <FolderRename folder={folder} folderIndex={folderIndex} />
-            <ImageList folder={folder} />
-          </div>
-        </div>
-      ))}
+            <HeaderContainer>
+              <FolderRename folder={folder} folderIndex={folderIndex} />
+              <StyledButton onClick={() => handleRemoveFolder(folder.id)}>
+                <Bin size={18} />
+              </StyledButton>
+            </HeaderContainer>
+            <ImageListContainer>
+              <ImageList folder={folder} />
+            </ImageListContainer>
+          </FlexContainer>
+        ))}
+      </GridContainer>
     </>
   );
 });

@@ -7,11 +7,13 @@ const StyledH3 = styled.h3`
   color: #333;
   font-size: 20px;
   font-weight: bold;
-  margin-bottom: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const StyledInput = styled.input`
-  padding: 10px;
+  padding: 2px;
   font-size: 16px;
   border-radius: 5px;
   border: 1px solid #ccc;
@@ -60,7 +62,7 @@ const FolderRename = observer(
     }, [editingFolderIndex, folderIndex]);
 
     return (
-      <div>
+      <>
         {editingFolderIndex === folderIndex ? (
           <StyledInput
             ref={inputRef}
@@ -73,7 +75,7 @@ const FolderRename = observer(
         ) : (
           <StyledH3 onClick={() => handleClick()}>{folder.name}</StyledH3>
         )}
-      </div>
+      </>
     );
   }
 );

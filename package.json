@@ -17,6 +17,7 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
+    "@styled-icons/icomoon": "^10.46.0",
     "blueimp-load-image": "^5.16.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",

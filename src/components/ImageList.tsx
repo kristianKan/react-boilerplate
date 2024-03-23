@@ -1,23 +1,45 @@
 import { observer } from "mobx-react-lite";
 import styled from "styled-components";
+import { Bin } from "@styled-icons/icomoon/Bin";
 import folderStore, { Folder } from "../stores/folderStore";
 import { Image } from "../stores/imageStore";
 
 const StyledButton = styled.button`
+  display: none;
   position: absolute;
   top: 0;
   right: 0;
-  background-color: #f44336; /* Red */
   color: white;
-  border: none;
+  width: 22px;
+  height: 22px;
+  line-height: 10px;
+  margin: 6px;
   cursor: pointer;
-  padding: 10px 15px;
-  font-size: 20px;
-  line-height: 1;
-  z-index: 1;
-  &:hover {
-    background-color: #d32f2f;
+`;
+
+const StyledMask = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+`;
+
+const ImageContainer = styled.div`
+  position: relative;
+
+  &:hover ${StyledButton}, &:hover ${StyledMask} {
+    display: block;
+    opacity: 1;
   }
+`;
+
+const StyledImage = styled.img`
+  width: 100%;
+  height: auto;
 `;
 
 const ImageList = observer(({ folder }: { folder: Folder }) => {
@@ -34,21 +56,20 @@ const ImageList = observer(({ folder }: { folder: Folder }) => {
   };
 
   return (
-    <div>
-      {folder.folder.images.map((image: Image, imageIndex: number) => (
-        <div key={imageIndex} style={{ position: "relative" }}>
-          <StyledButton onClick={() => handleRemoveImage(image.id, folder.id)}>
-            X
-          </StyledButton>
-          <img
-            src={image.url}
-            alt={`Uploaded image ${imageIndex + 1}`}
+    <>
+      {folder.folder.images.map((image: Image) => (
+        <ImageContainer key={image.id}>
+          <StyledImage src={image.url} alt={`Uploaded image ${image.id}`} />
+          <StyledMask
             draggable="true"
             onDragStart={(e) => handleDragImage(e, image)}
           />
-        </div>
+          <StyledButton onClick={() => handleRemoveImage(image.id, folder.id)}>
+            <Bin size={18} />
+          </StyledButton>
+        </ImageContainer>
       ))}
-    </div>
+    </>
   );
 });
 

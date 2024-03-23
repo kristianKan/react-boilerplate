@@ -1,7 +1,12 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import folderStore from "../stores/folderStore";
 import { ImageStore } from "../stores/imageStore";
+
+const StyledDiv = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
 
 const StyledInput = styled.input`
   padding: 10px;
@@ -11,40 +16,58 @@ const StyledInput = styled.input`
 `;
 
 const StyledButton = styled.button`
-  background-color: #4caf50; /* Green */
-  border: none;
-  border-radius: 10px;
+  background-color: black;
+  border-radius: 50%;
   color: white;
-  padding: 12px 24px;
-  text-align: center;
+  width: 36px;
+  height: 36px;
   text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
   margin: 4px 2px;
   cursor: pointer;
 `;
 
 const FolderCreator = () => {
   const [newFolderName, setNewFolderName] = useState("");
+  const [error, setError] = useState("");
 
   const handleAddFolder = () => {
-    folderStore.addFolder(newFolderName, new ImageStore());
-    folderStore.setSelectedFolderIndex(folderStore.folders.length - 1);
-    setNewFolderName(""); // Set newFolderName to null
+    if (newFolderName.trim() === "") {
+      setError("name can't be blank");
+    } else {
+      folderStore.addFolder(newFolderName, new ImageStore());
+      folderStore.setSelectedFolderIndex(folderStore.folders.length - 1);
+      setNewFolderName("");
+      setError("");
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (newFolderName.trim() === "") {
+      setError("name can't be blank");
+    }
+    setNewFolderName(e.target.value);
+    setError("");
   };
 
   return (
-    <div>
-      <StyledInput
-        type="text"
-        placeholder="enter folder name"
-        value={newFolderName}
-        onChange={(e) => setNewFolderName(e.target.value)}
-      />
-      <StyledButton onClick={() => handleAddFolder()}>
-        Create New Folder
-      </StyledButton>
-    </div>
+    <StyledDiv>
+      <div>
+        <StyledInput
+          type="text"
+          placeholder="enter folder name"
+          value={newFolderName}
+          onChange={(e) => handleChange(e)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleAddFolder();
+            }
+          }}
+          style={error ? { borderColor: "red" } : {}}
+        />
+        <StyledButton onClick={() => handleAddFolder()}>+</StyledButton>
+      </div>
+      {error && <div style={{ color: "red", fontSize: "10px" }}>{error}</div>}
+    </StyledDiv>
   );
 };
 

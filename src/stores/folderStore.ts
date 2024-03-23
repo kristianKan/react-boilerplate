@@ -1,16 +1,17 @@
 import { makeAutoObservable } from "mobx";
 import { makePersistable } from "mobx-persist-store";
-import { ImageStore } from "./imageStore";
-import { Image } from "./imageStore";
+import { v4 as uuidv4 } from "uuid";
+import { ImageStore, Image } from "./imageStore";
 
 export interface Folder {
+  id: string;
   name: string;
-  folder: Image;
+  folder: ImageStore;
 }
 
 class FolderStore {
-  folders: { name: string; folder: ImageStore }[] = [
-    { name: "default folder", folder: new ImageStore() },
+  folders: Folder[] = [
+    { id: uuidv4(), name: "default folder", folder: new ImageStore() },
   ];
   selectedFolderIndex = 0;
 
@@ -19,13 +20,16 @@ class FolderStore {
     makePersistable(this, {
       name: "folderStore",
       properties: [
+        "selectedFolderIndex",
         {
           key: "folders",
           serialize: (folders) => {
             const foldersData = folders.map((folder) => {
-              const name = folder.name;
-              const images = folder.folder.images;
-              return { name, images };
+              return {
+                id: folder.id,
+                name: folder.name,
+                images: folder.folder.images,
+              };
             });
             return JSON.stringify(foldersData);
           },
@@ -34,10 +38,11 @@ class FolderStore {
               try {
                 const foldersData = JSON.parse(foldersString);
                 return foldersData.map(
-                  (folder: { name: string; images: Array<string> }) => {
+                  (folder: { id: string; name: string; images: Image[] }) => {
                     const imageStore = new ImageStore();
                     imageStore.images = folder.images;
                     return {
+                      id: folder.id,
                       name: folder.name,
                       folder: imageStore,
                     };
@@ -62,7 +67,17 @@ class FolderStore {
   }
 
   addFolder(newName: string, newFolder: ImageStore) {
-    this.folders.push({ name: newName, folder: newFolder });
+    this.folders.push({ id: uuidv4(), name: newName, folder: newFolder });
+  }
+
+  removeFolder(folderId: string) {
+    const index = this.folders.findIndex((folder) => folder.id === folderId);
+    if (index !== -1) {
+      this.folders.splice(index, 1);
+      if (this.selectedFolderIndex >= this.folders.length) {
+        this.selectedFolderIndex = this.folders.length - 1;
+      }
+    }
   }
 
   renameFolder(index: number, newName: string) {

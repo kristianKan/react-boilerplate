@@ -1,6 +1,7 @@
 import { observer } from "mobx-react-lite";
-import folderStore, { Folder } from "../stores/folderStore";
 import styled from "styled-components";
+import folderStore, { Folder } from "../stores/folderStore";
+import { Image } from "../stores/imageStore";
 
 const StyledButton = styled.button`
   position: absolute;
@@ -19,37 +20,36 @@ const StyledButton = styled.button`
   }
 `;
 
-const ImageList = observer(
-  ({ folder, folderIndex }: { folder: Folder; folderIndex: number }) => {
-    const handleRemoveImage = (imageUrl: string, folderIndex: number) => {
-      folderStore.folders[folderIndex].folder.removeImage(imageUrl);
-    };
+const ImageList = observer(({ folder }: { folder: Folder }) => {
+  const handleRemoveImage = (imageId: string, folderId: string) => {
+    const folder = folderStore.folders.find((folder) => folder.id === folderId);
+    folder && folder.folder.removeImage(imageId);
+  };
 
-    return (
-      <div>
-        {folder.folder.images.map((imageUrl: string, imageIndex: number) => (
-          <div key={imageIndex} style={{ position: "relative" }}>
-            <StyledButton
-              onClick={() => handleRemoveImage(imageUrl, folderIndex)}
-            >
-              X
-            </StyledButton>
-            <img
-              src={imageUrl}
-              alt={`Uploaded image ${imageIndex + 1}`}
-              draggable="true"
-              onDragStart={(e) => {
-                e.dataTransfer.setData(
-                  "image",
-                  JSON.stringify({ imageUrl, sourceFolderIndex: folderIndex })
-                );
-              }}
-            />
-          </div>
-        ))}
-      </div>
+  const handleDragImage = (e: React.DragEvent, image: Image) => {
+    e.dataTransfer.setData(
+      "image",
+      JSON.stringify({ image, sourceFolderId: folder.id })
     );
-  }
-);
+  };
+
+  return (
+    <div>
+      {folder.folder.images.map((image: Image, imageIndex: number) => (
+        <div key={imageIndex} style={{ position: "relative" }}>
+          <StyledButton onClick={() => handleRemoveImage(image.id, folder.id)}>
+            X
+          </StyledButton>
+          <img
+            src={image.url}
+            alt={`Uploaded image ${imageIndex + 1}`}
+            draggable="true"
+            onDragStart={(e) => handleDragImage(e, image)}
+          />
+        </div>
+      ))}
+    </div>
+  );
+});
 
 export default ImageList;

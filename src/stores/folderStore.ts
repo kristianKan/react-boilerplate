@@ -66,8 +66,12 @@ class FolderStore {
     this.selectedFolderIndex = index;
   }
 
-  addFolder(newName: string, newFolder: ImageStore) {
-    this.folders.push({ id: uuidv4(), name: newName, folder: newFolder });
+  addFolder(newName: string) {
+    this.folders.push({
+      id: uuidv4(),
+      name: newName,
+      folder: new ImageStore(),
+    });
   }
 
   removeFolder(folderId: string) {

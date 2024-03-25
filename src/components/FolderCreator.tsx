@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import folderStore from "../stores/folderStore";
-import { ImageStore } from "../stores/imageStore";
 
 const StyledDiv = styled.div`
   display: flex;
@@ -34,7 +33,7 @@ const FolderCreator = () => {
     if (newFolderName.trim() === "") {
       setError("name can't be blank");
     } else {
-      folderStore.addFolder(newFolderName, new ImageStore());
+      folderStore.addFolder(newFolderName);
       folderStore.setSelectedFolderIndex(folderStore.folders.length - 1);
       setNewFolderName("");
       setError("");

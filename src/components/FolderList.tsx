@@ -40,7 +40,7 @@ const ImageListContainer = styled.div`
 const FlexContainer = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
 `;
 
 const GridContainer = styled.div`

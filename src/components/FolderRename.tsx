@@ -28,6 +28,10 @@ const FolderRename = observer(
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
       if (e.key === "Enter") {
+        if (editingFolderName.trim() === "") {
+          return;
+        }
+
         folderStore.renameFolder(editingFolderIndex, editingFolderName);
         setEditingFolderIndex(-1);
         setEditingFolderName("");
